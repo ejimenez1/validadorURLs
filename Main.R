@@ -8,31 +8,48 @@ source("Util.R")
 # ---- 1 - Load Training Set ---------------
 
 # load tokens from csv (term dictonary)
-TrainingSet <- read.csv('TrainingSet.csv')
-# dim(TrainingSet)
-# dim(data)
+TrainingSet <- read.csv('TrainingSet_1.csv')
+# remove X column
+TrainingSet$X <- NULL
+
+# load validation set
+ValidationSet <- read.csv('ValidationSet_2.csv')
+# remove X column
+ValidationSet$X <- NULL
 
 # ---- Build Logit Model ---------------
 
 # Create a Logistic regression model and exclude X
-glm.fit = glm(V1 ~. -X  , data = TrainingSet, family = binomial)
-summary(glm.fit)
+glm.fit = glm(V1 ~. , data = TrainingSet, family = binomial)
+#summary(glm.fit)
 
 # create a dummy entry
-# raw URL
-mal_url <-"want to have sex, call rightnow"
-# get url tokens
-url_tokens <- tokenizer(mal_url, 3)
-# tokens indexes
-idx <- processUrl(url_tokens, dic)
-# number of elements in dictionary
+dic <- getDictionary()
 n <- length(dic$token)
-# binary feature array
-feature_array <- urlFeatures(idx, n) 
 
-predict(glm.fit, feature_array,  type="response")
+# Test Prediction
+# mal_url <-"want to have sex, call rightnow"
+#features <- urlFeatures(processUrl(tokenizer(mal_url, G_TOKEN_SIZE), dic),n)
+#df <- data.frame(matrix(ncol = n, nrow = 1))
+#colnames(df) <- colnames(TrainingSet[,2:ncol(TrainingSet)])
+#df[1,] = features
 
-TrainingSet[1:10,1:4]
+
+#### Training Set Accuracy (83%)
+pt <- predict(glm.fit, newdata = TrainingSet,  type="response")
+pt[pt >= 0.5] = 1
+pt[pt < 0.5] = 0
+
+training_acc <- TrainingSet$V1 - pt
+training_acc <- length(training_acc[training_acc == 0]) / nrow(TrainingSet) 
+
+#### Validation Set Accuracy (82%)
+pv <- predict(glm.fit, newdata = ValidationSet,  type="response")
+pv[pv >= 0.5] = 1
+pv[pv < 0.5] = 0
+
+validation_acc <- ValidationSet$V1 - pv
+validation_acc <- length(validation_acc[validation_acc == 0]) / nrow(ValidationSet) 
 
 
 

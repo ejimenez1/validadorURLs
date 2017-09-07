@@ -9,9 +9,16 @@ source("Util.R")
 
 setwd("C:/Users/R2D2/Desktop/DataSetUrl")
 
+# guarantee same sample
+set.seed(2017)
+
 # read data from source
 data <- read.csv("DataSetRaw.csv", stringsAsFactors = FALSE)
 colnames(data) <- c("y","url")
+
+# 50% of dataset will be used as generate dictionary (Training Set Equivalent)
+data <- data[sample(nrow(data)),]
+data <- data[1:2499];
 
 # get list of malicious URLs
 malicious_urls = subset(data, data$y == "1")
@@ -42,6 +49,10 @@ frequency <- sort(frequency, decreasing = TRUE)
 
 # persist frequency table to CSV
 frequencyMat <- as.matrix(frequency)
+
+# tunning (just add to dictionary those words with +30)
+frequencyMat <- frequencyMat[frequencyMat[,1] > 30,]
+
 write.csv(frequencyMat, 'Dictionary.csv')
 
 # This script generates Dictionary.csv which is 
@@ -50,6 +61,10 @@ write.csv(frequencyMat, 'Dictionary.csv')
 # used to create the dictionaty csv
 
 # ---------------------------------------------
+
+
+
+
 
 
 

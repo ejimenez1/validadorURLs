@@ -1,0 +1,14 @@
+{
+    "name": "urlDetector",
+    "description": "Pendiente",
+    "version": "0.1",
+    "private": true,
+    "license": "MIT",
+    "author": "Jorge Chaves",
+    "engines": {
+        "node": ">=6.9.1"
+    },
+    "scripts": {
+        "start": "node gestor_solicitudes.js"
+    }
+}
